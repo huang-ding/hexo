@@ -3,18 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
+title: 子非鱼
+subtitle: '不轻信别人的结论，实践才是检验真理的唯一标准'
 description: ''
 keywords:
-author: John Doe
+author: haung ding
 language: en
 timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://huang-ding.github.io
-root: /hexo/
+url: https://huang-ding.github.io/hexo
+root: /hexo
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -93,7 +93,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: indigo
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
