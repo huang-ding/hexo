@@ -15,7 +15,7 @@
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
-    <link rel="alternate" href="https://huang-ding.github.io/hexo/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="./atom.xml" title="Hexo" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -24,7 +24,7 @@
     <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   
   
-<link rel="stylesheet" href="https://huang-ding.github.io/hexo/css/style.css">
+<link rel="stylesheet" href="./css/style.css">
 
 <meta name="generator" content="Hexo 4.2.0"></head>
 
@@ -36,7 +36,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="https://huang-ding.github.io/hexo/" id="logo">Hexo</a>
+        <a href="./" id="logo">Hexo</a>
       </h1>
       
     </div>
@@ -44,14 +44,14 @@
       <nav id="main-nav">
         <a id="main-nav-toggle" class="nav-icon"></a>
         
-          <a class="main-nav-link" href="https://huang-ding.github.io/hexo/">Home</a>
+          <a class="main-nav-link" href="./">Home</a>
         
-          <a class="main-nav-link" href="https://huang-ding.github.io/hexo/archives">Archives</a>
+          <a class="main-nav-link" href="./archives">Archives</a>
         
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="https://huang-ding.github.io/hexo/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="./atom.xml" title="RSS Feed"></a>
         
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
@@ -66,12 +66,12 @@
   
     <article id="post-nio" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="https://huang-ding.github.io/hexo/2020/04/24/nio/" class="article-date">
+    <a href="./2020/04/24/nio/" class="article-date">
   <time datetime="2020-04-24T07:47:03.000Z" itemprop="datePublished">2020-04-24</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="https://huang-ding.github.io/hexo/categories/unix%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/">unix网络模型</a>
+    <a class="article-category-link" href="./categories/unix%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/">unix网络模型</a>
   </div>
 
   </div>
@@ -82,7 +82,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="https://huang-ding.github.io/hexo/2020/04/24/nio/">nio</a>
+      <a class="article-title" href="./2020/04/24/nio/">nio</a>
     </h1>
   
 
@@ -93,31 +93,31 @@
         <h4 id="liunx-网络I-O模型"><a href="#liunx-网络I-O模型" class="headerlink" title="liunx 网络I/O模型"></a>liunx 网络I/O模型</h4><ul>
 <li>阻塞I/O模型：一个线程处理一个IO，进程阻塞;</li>
 </ul>
-<p><img src="https://huang-ding.github.io/hexo/hexo/2020/04/24/nio/Snipaste_2020-04-24_14-47-17.png" alt></p>
+<p><img src="./hexo/2020/04/24/nio/Snipaste_2020-04-24_14-47-17.png" alt></p>
 <ul>
 <li>非阻塞I/O模型：缓冲区无数据，返回一个EWOULDBLOCK错误，一般进行轮询检查此状态;</li>
 </ul>
-<p><img src="https://huang-ding.github.io/hexo/hexo/2020/04/24/nio/Snipaste_2020-04-24_14-48-47.png" alt></p>
+<p><img src="./hexo/2020/04/24/nio/Snipaste_2020-04-24_14-48-47.png" alt></p>
 <ul>
 <li>I/O复用模型：Liunx提供select/poll,进程通过将文件描述符(fd)传递给select/poll系统调用,阻塞在select操作上，这样select/poll可以侦测多个fd是否处于就绪状态；但是fd数量有限，受到一些制约，因此liunx还提供了一个epoll的系统调用，epool使用基于驱动方式代替顺序扫码，提高性能，当有fd就绪时，立即回调函数rollback;</li>
 </ul>
-<p><img src="https://huang-ding.github.io/hexo/hexo/2020/04/24/nio/Snipaste_2020-04-24_15-29-43.png" alt></p>
+<p><img src="./hexo/2020/04/24/nio/Snipaste_2020-04-24_15-29-43.png" alt></p>
 <ul>
 <li>信号驱动I/O模型：提高开启套接字信号驱动IO功能，并通过系统调用sigaction执行信号处理函数，当数据准备就绪时，就为改进程生成SIGIO信号，通过信号回调通知应用程序调用recvform函数读取数据，并通知主循环函数处理数据</li>
 </ul>
-<p><img src="https://huang-ding.github.io/hexo/hexo/2020/04/24/nio/Snipaste_2020-04-24_15-31-34.png" alt></p>
+<p><img src="./hexo/2020/04/24/nio/Snipaste_2020-04-24_15-31-34.png" alt></p>
 <ul>
 <li>异步I/O模型：告知内核启动某个操作，并让内核在整个操作完成后通知我们。</li>
 </ul>
-<p><img src="https://huang-ding.github.io/hexo/hexo/2020/04/24/nio/Snipaste_2020-04-24_15-41-33.png" alt></p>
+<p><img src="./hexo/2020/04/24/nio/Snipaste_2020-04-24_15-41-33.png" alt></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://huang-ding.github.io/hexo/2020/04/24/nio/" data-id="ck9go3dsr0000d4t793u9f819" class="article-share-link">Share</a>
+      <a data-url="https://huang-ding.github.io/hexo/2020/04/24/nio/" data-id="ck9go6xy70000r0t7f3wrc5j3" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="https://huang-ding.github.io/hexo/tags/nio/" rel="tag">nio</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="https://huang-ding.github.io/hexo/tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" rel="tag">网络模型</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/nio/" rel="tag">nio</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="./tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" rel="tag">网络模型</a></li></ul>
 
     </footer>
   </div>
@@ -136,7 +136,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="https://huang-ding.github.io/hexo/categories/unix%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/">unix网络模型</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="./categories/unix%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/">unix网络模型</a></li></ul>
     </div>
   </div>
 
@@ -146,7 +146,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="https://huang-ding.github.io/hexo/tags/nio/" rel="tag">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="https://huang-ding.github.io/hexo/tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" rel="tag">网络模型</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="./tags/nio/" rel="tag">nio</a></li><li class="tag-list-item"><a class="tag-list-link" href="./tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" rel="tag">网络模型</a></li></ul>
     </div>
   </div>
 
@@ -156,7 +156,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="https://huang-ding.github.io/hexo/tags/nio/" style="font-size: 10px;">nio</a> <a href="https://huang-ding.github.io/hexo/tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;">网络模型</a>
+      <a href="./tags/nio/" style="font-size: 10px;">nio</a> <a href="./tags/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;">网络模型</a>
     </div>
   </div>
 
@@ -165,7 +165,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="https://huang-ding.github.io/hexo/archives/2020/04/">April 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="./archives/2020/04/">April 2020</a></li></ul>
     </div>
   </div>
 
@@ -178,7 +178,7 @@
       <ul>
         
           <li>
-            <a href="https://huang-ding.github.io/hexo/2020/04/24/nio/">nio</a>
+            <a href="./2020/04/24/nio/">nio</a>
           </li>
         
       </ul>
@@ -201,9 +201,9 @@
     </div>
     <nav id="mobile-nav">
   
-    <a href="https://huang-ding.github.io/hexo/" class="mobile-nav-link">Home</a>
+    <a href="./" class="mobile-nav-link">Home</a>
   
-    <a href="https://huang-ding.github.io/hexo/archives" class="mobile-nav-link">Archives</a>
+    <a href="./archives" class="mobile-nav-link">Archives</a>
   
 </nav>
     
@@ -212,15 +212,15 @@
 
 
   
-<link rel="stylesheet" href="https://huang-ding.github.io/hexo/fancybox/jquery.fancybox.css">
+<link rel="stylesheet" href="./fancybox/jquery.fancybox.css">
 
   
-<script src="https://huang-ding.github.io/hexo/fancybox/jquery.fancybox.pack.js"></script>
+<script src="./fancybox/jquery.fancybox.pack.js"></script>
 
 
 
 
-<script src="https://huang-ding.github.io/hexo/js/script.js"></script>
+<script src="./js/script.js"></script>
 
 
 
