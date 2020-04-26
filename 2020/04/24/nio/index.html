@@ -75,7 +75,7 @@
             <li class="waves-block waves-effect">
               <a href="/hexo/"  >
                 <i class="icon icon-lg icon-home"></i>
-                主页
+                Home
               </a>
             </li>
         
@@ -221,13 +221,9 @@
     
     <div class="content">
         
-<span class="post-time">
-    Last updated: <time datetime="2020-04-26T06:50:57.544Z" itemprop="dateUpdated">2020-04-26 14:50:57</time>
-</span><br>
-
 
         
-        这里可以写作者留言，标签和 hexo 中所有变量及辅助函数等均可调用，示例：<a href="/hexo/2020/04/24/nio/" target="_blank" rel="external">https://huang-ding.github.io/hexo/2020/04/24/nio/</a>
+        有任何建议请留言邮箱
         
     </div>
     
@@ -240,10 +236,6 @@
 </blockquote>
 
         
-<div class="page-reward">
-    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
-</div>
-
 
 
         <div class="post-footer">
@@ -328,32 +320,6 @@
 
 </article>
 
-<div id="reward" class="page-modal reward-lay">
-    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <h3 class="reward-title">
-        <i class="icon icon-quote-left"></i>
-        谢谢大爷~
-        <i class="icon icon-quote-right"></i>
-    </h3>
-    <div class="reward-content">
-        
-        <div class="reward-code">
-            <img id="rewardCode" src="/hexo/img/wechat.jpg" alt="打赏二维码">
-        </div>
-        
-        <label class="reward-toggle">
-            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
-                data-wechat="/hexo/img/wechat.jpg" data-alipay="/hexo/img/alipay.jpg">
-            <div class="reward-toggle-ctrol">
-                <span class="reward-toggle-item wechat">微信</span>
-                <span class="reward-toggle-label"></span>
-                <span class="reward-toggle-item alipay">支付宝</span>
-            </div>
-        </label>
-        
-    </div>
-</div>
-
 
 
 </div>
@@ -377,7 +343,7 @@
         </p>
     </div>
     <div class="bottom">
-        <p><span>haung ding &copy; 2015 - 2020</span>
+        <p><span>haung ding &copy; 2020</span>
             <span>
                 
                 Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
@@ -439,7 +405,7 @@
 
     <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
 <script>
-var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: true };
+var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: false };
 
 
 </script>
@@ -480,10 +446,10 @@ var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: true };
     var OriginTitile = document.title, titleTime;
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            document.title = '死鬼去哪里了！';
+            document.title = '不看了吗';
             clearTimeout(titleTime);
         } else {
-            document.title = '(つェ⊂)咦!又好了!';
+            document.title = '欢迎欢迎';
             titleTime = setTimeout(function() {
                 document.title = OriginTitile;
             },2000);
