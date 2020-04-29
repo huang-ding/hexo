@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-12.png">
 <meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-17.png">
 <meta property="article:published_time" content="2020-04-29T13:18:53.000Z">
-<meta property="article:modified_time" content="2020-04-29T14:21:36.289Z">
+<meta property="article:modified_time" content="2020-04-29T14:25:49.763Z">
 <meta property="article:author" content="haung ding">
 <meta property="article:tag" content="nio">
 <meta name="twitter:card" content="summary">
@@ -182,7 +182,7 @@
 
 
 <ol>
-<li><p>JDK1.0—JDK1.3, java io类库非常原始，很多UNIX网络编程概念或接口在io库都没有提现，如：Buffer，Channel，Selector等</p>
+<li><p>JDK1.0—JDK1.3, java io类库非常原始，很多UNIX网络编程概念或接口在io库都没有体现，如：Buffer，Channel，Selector等</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//最传统单线程处理</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BIOService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//监听8080端口</span></span><br><span class="line">        ServerSocket socketServer = <span class="keyword">new</span> ServerSocket(<span class="number">8080</span>);</span><br><span class="line">        System.out.println(<span class="string">"启动服务端"</span>);</span><br><span class="line">        <span class="keyword">while</span> (!socketServer.isClosed()) &#123;</span><br><span class="line">            <span class="comment">//阻塞方法</span></span><br><span class="line">            Socket accept = socketServer.accept();</span><br><span class="line">            System.out.println(<span class="string">"收到新链接"</span> + accept.toString());</span><br><span class="line">            <span class="keyword">try</span> (</span><br><span class="line">                <span class="comment">//接受数据 net +io</span></span><br><span class="line">                InputStream inputStream = accept.getInputStream();</span><br><span class="line">                BufferedReader bufferedReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(inputStream, StandardCharsets.UTF_8)))</span><br><span class="line">            &#123;</span><br><span class="line">                String msg;</span><br><span class="line">                <span class="keyword">while</span> ((msg = bufferedReader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (msg.length() == <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(msg);</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">"收到数据："</span> + accept.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用多线程技术支持多链接 但是和线程池的大小有关 伪异步IO</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BIOService1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ExecutorService threadPool = Executors.newCachedThreadPool();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//监听8080端口</span></span><br><span class="line">        ServerSocket socketServer = <span class="keyword">new</span> ServerSocket(<span class="number">8080</span>);</span><br><span class="line">        System.out.println(<span class="string">"启动服务端"</span>);</span><br><span class="line">        <span class="keyword">while</span> (!socketServer.isClosed()) &#123;</span><br><span class="line">            <span class="comment">//阻塞方法</span></span><br><span class="line">            Socket accept = socketServer.accept();</span><br><span class="line">            System.out.println(<span class="string">"收到新链接"</span> + accept.toString());</span><br><span class="line">            <span class="comment">//线程处理</span></span><br><span class="line">            threadPool.execute(() -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="keyword">try</span> (</span><br><span class="line">                        <span class="comment">//接受数据 net +io</span></span><br><span class="line">                        InputStream inputStream = accept.getInputStream();</span><br><span class="line">                        BufferedReader bufferedReader = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">                            <span class="keyword">new</span> InputStreamReader(inputStream, StandardCharsets.UTF_8));</span><br><span class="line">                        </span><br><span class="line">                        OutputStream outputStream = accept.getOutputStream();</span><br><span class="line">                    ) &#123;</span><br><span class="line">                        String msg;</span><br><span class="line">                        <span class="comment">//读取数据阻塞</span></span><br><span class="line">                        <span class="keyword">while</span> ((msg = bufferedReader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (msg.length() == <span class="number">0</span>) &#123;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            System.out.println(msg);</span><br><span class="line">                        &#125;</span><br><span class="line">                        System.out.println(<span class="string">"收到数据："</span> + accept.toString());</span><br><span class="line">                        <span class="comment">//返回http协议</span></span><br><span class="line">                        <span class="comment">//写入数据阻塞</span></span><br><span class="line">                        outputStream.write(<span class="string">"HTTP/1.1 200 ok \r\n"</span>.getBytes());</span><br><span class="line">                        outputStream.write(<span class="string">"Content-Length: 11\r\n\r\n"</span>.getBytes());</span><br><span class="line">                        outputStream.write(<span class="string">"Hello World"</span>.getBytes());</span><br><span class="line">                        outputStream.flush();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会引发的问题</span></span><br><span class="line"><span class="comment">// 1.如果可用线程都出现故障阻塞，后续所有IO消息都将在队列排队</span></span><br><span class="line"><span class="comment">// 2.当队列满后，后续入队操作将被阻塞</span></span><br><span class="line"><span class="comment">// 3.新的客户端请求消息将被拒绝，客户端发送大量链接超时</span></span><br><span class="line"><span class="comment">// 4.客户认为系统已经崩溃</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// NIO来解决</span></span><br></pre></td></tr></table></figure>
@@ -196,39 +196,30 @@
 <ol>
 <li><p>进行异步IO的缓冲区ByteBuffer</p>
 <ol>
-<li><p>核心概念</p>
-</li>
 <li><ul>
-<li><ul>
-<li><p><strong>缓冲区容量(</strong>capacity<strong>)</strong></p>
+<li><p>缓冲区容量(<strong>capacity</strong>)</p>
 </li>
-<li><p><strong>缓冲区位置(</strong>position<strong>)</strong></p>
+<li><p>缓冲区位置(<strong>position</strong>)</p>
 </li>
-<li><p><strong>缓冲区限制(</strong>limit<strong>)</strong></p>
+<li><p>缓冲区限制(<strong>limit</strong>)</p>
 </li>
-<li><p><strong>堆外缓存及堆内缓存</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//构建一个堆内内存4字节缓存区</span></span><br><span class="line">ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">4</span>);</span><br><span class="line"><span class="comment">//构建一个堆外内存4字节缓存区,由于不由GC管理，使用是最好先指定JVM的最大堆外缓冲区大小限制；少一次堆拷贝</span></span><br><span class="line">ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(<span class="number">4</span>);</span><br><span class="line"><span class="comment">//缓冲区 相关api</span></span><br><span class="line"><span class="comment">// flip() 读写反转</span></span><br><span class="line"><span class="comment">// compact() 清除已读缓存区</span></span><br><span class="line"><span class="comment">// clear() 清除整个缓冲区</span></span><br><span class="line"><span class="comment">// rewind() 重置position为0</span></span><br><span class="line"><span class="comment">// mark() 标记position的位置</span></span><br><span class="line"><span class="comment">// reset() 重置position为上次mark()标记的位置</span></span><br></pre></td></tr></table></figure>
-
-
-
+<li><p>堆外缓存及堆内缓存</p>
+</li>
+<li><pre><code class="java"><span class="comment">//构建一个堆内内存4字节缓存区</span>
+ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">4</span>);
+<span class="comment">//构建一个堆外内存4字节缓存区,由于不由GC管理，使用是最好先指定JVM的最大堆外缓冲区大小限制；少一次堆拷贝</span>
+ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(<span class="number">4</span>);
+<span class="comment">//缓冲区 相关api</span>
+<span class="comment">// flip() 读写反转</span>
+<span class="comment">// compact() 清除已读缓存区</span>
+<span class="comment">// clear() 清除整个缓冲区</span>
+<span class="comment">// rewind() 重置position为0</span>
+<span class="comment">// mark() 标记position的位置</span>
+<span class="comment">// reset() 重置position为上次mark()标记的位置</span>
+&lt;!--￼<span class="number">3</span>--&gt;
+</code></pre>
 </li>
 </ul>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<pre><code>- {% image http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-3.png '' '' %}</code></pre><ol start="2">
-<li><p>进行异步IO的管道Pipe</p>
-</li>
-<li><p>进行各种IO操作的Channel，包括ServerSocketChannel和SocketChannel</p>
-<ol>
-<li><p>Channel 通道，提供了NIO的非阻塞方法API，如文件FileChannel，SocketChannel，涵盖了UDP/TCP网络和文件IO，使用缓冲区进行IO操作</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SocketChannel和ServiceSocketChannel代码示例</span></span><br><span class="line"><span class="comment">//SocketChannel</span></span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line">SocketChannel socketChannel = SocketChannel.open();</span><br><span class="line"><span class="comment">//设置非阻塞模式,默认阻塞模式</span></span><br><span class="line">socketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//链接服务端</span></span><br><span class="line">socketChannel.connect(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">8080</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//ServiceSocketChannel</span></span><br><span class="line"><span class="comment">//创建网络服务端</span></span><br><span class="line">ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();</span><br><span class="line"><span class="comment">//设置非阻塞</span></span><br><span class="line">serverSocketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//绑定端口</span></span><br><span class="line">serverSocketChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">8080</span>));</span><br></pre></td></tr></table></figure>
-
 <p><img src="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-8.png" alt=""></p>
 </li>
 </ol>
@@ -241,6 +232,8 @@
 
 
 
+</li>
+</ol>
 </li>
 </ol>
 <ol start="6">
