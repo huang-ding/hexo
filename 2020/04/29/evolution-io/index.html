@@ -28,15 +28,16 @@
 <meta property="og:site_name" content="子非鱼">
 <meta property="og:description" content="1234567891011121314151617&#x2F;&#x2F;客户端演示代码public class BIOClient &amp;#123;    public static void main(String[] args) &amp;#123;        try (            Socket s &#x3D; new Socket(&quot;127.0.0.1&quot;, 8080);            OutputStre">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-3.png">
 <meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-8.png">
 <meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-12.png">
 <meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-17.png">
 <meta property="article:published_time" content="2020-04-29T13:18:53.000Z">
-<meta property="article:modified_time" content="2020-04-29T14:25:49.763Z">
+<meta property="article:modified_time" content="2020-04-29T14:30:03.326Z">
 <meta property="article:author" content="haung ding">
 <meta property="article:tag" content="nio">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-8.png">
+<meta name="twitter:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-3.png">
     
     <link rel="shortcut icon" href="/hexo/favicon.ico">
     <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
@@ -195,31 +196,21 @@
 <li><p>JDK1.4 NIO 以JSR-51 的身份正式发布，添加了java.nio包</p>
 <ol>
 <li><p>进行异步IO的缓冲区ByteBuffer</p>
+<p><strong>缓存区容量(capacity)</strong></p>
+<p><strong>缓冲区位置(position)</strong></p>
+<p><strong>缓冲区限制(limit)</strong></p>
+<p><strong>堆外缓存及堆内缓存</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//构建一个堆内内存4字节缓存区</span></span><br><span class="line">ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">4</span>);</span><br><span class="line"><span class="comment">//构建一个堆外内存4字节缓存区,由于不由GC管理，使用是最好先指定JVM的最大堆外缓冲区大小限制；少一次堆拷贝</span></span><br><span class="line">ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(<span class="number">4</span>);</span><br><span class="line"><span class="comment">//缓冲区 相关api</span></span><br><span class="line"><span class="comment">// flip() 读写反转</span></span><br><span class="line"><span class="comment">// compact() 清除已读缓存区</span></span><br><span class="line"><span class="comment">// clear() 清除整个缓冲区</span></span><br><span class="line"><span class="comment">// rewind() 重置position为0</span></span><br><span class="line"><span class="comment">// mark() 标记position的位置</span></span><br><span class="line"><span class="comment">// reset() 重置position为上次mark()标记的位置</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-3.png" alt=""></p>
+</li>
+<li><p>进行异步IO的管道Pipe</p>
+</li>
+<li><p>进行各种IO操作的Channel，包括ServerSocketChannel和SocketChannel</p>
 <ol>
-<li><ul>
-<li><p>缓冲区容量(<strong>capacity</strong>)</p>
-</li>
-<li><p>缓冲区位置(<strong>position</strong>)</p>
-</li>
-<li><p>缓冲区限制(<strong>limit</strong>)</p>
-</li>
-<li><p>堆外缓存及堆内缓存</p>
-</li>
-<li><pre><code class="java"><span class="comment">//构建一个堆内内存4字节缓存区</span>
-ByteBuffer byteBuffer = ByteBuffer.allocate(<span class="number">4</span>);
-<span class="comment">//构建一个堆外内存4字节缓存区,由于不由GC管理，使用是最好先指定JVM的最大堆外缓冲区大小限制；少一次堆拷贝</span>
-ByteBuffer byteBuffer1 = ByteBuffer.allocateDirect(<span class="number">4</span>);
-<span class="comment">//缓冲区 相关api</span>
-<span class="comment">// flip() 读写反转</span>
-<span class="comment">// compact() 清除已读缓存区</span>
-<span class="comment">// clear() 清除整个缓冲区</span>
-<span class="comment">// rewind() 重置position为0</span>
-<span class="comment">// mark() 标记position的位置</span>
-<span class="comment">// reset() 重置position为上次mark()标记的位置</span>
-&lt;!--￼<span class="number">3</span>--&gt;
-</code></pre>
-</li>
-</ul>
+<li><p>Channel 通道，提供了NIO的非阻塞方法API，如文件FileChannel，SocketChannel，涵盖了UDP/TCP网络和文件IO，使用缓冲区进行IO操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SocketChannel和ServiceSocketChannel代码示例</span></span><br><span class="line"><span class="comment">//SocketChannel</span></span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line">SocketChannel socketChannel = SocketChannel.open();</span><br><span class="line"><span class="comment">//设置非阻塞模式,默认阻塞模式</span></span><br><span class="line">socketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//链接服务端</span></span><br><span class="line">socketChannel.connect(<span class="keyword">new</span> InetSocketAddress(<span class="string">"127.0.0.1"</span>, <span class="number">8080</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//ServiceSocketChannel</span></span><br><span class="line"><span class="comment">//创建网络服务端</span></span><br><span class="line">ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();</span><br><span class="line"><span class="comment">//设置非阻塞</span></span><br><span class="line">serverSocketChannel.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"><span class="comment">//绑定端口</span></span><br><span class="line">serverSocketChannel.bind(<span class="keyword">new</span> InetSocketAddress(<span class="number">8080</span>));</span><br></pre></td></tr></table></figure>
+
 <p><img src="http://vlog.xrqiche.cn/hexo/netty/nio/20-4-29_22-8.png" alt=""></p>
 </li>
 </ol>
