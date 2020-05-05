@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>分布式系统架构演进之路 | 子非鱼 | 不轻信别人的结论，实践才是检验真理的唯一标准</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="分布式,设计思想">
+    <meta name="description" content="演进之路演进之路以一个网站为例  网站一开始就是大型的吗？ 我们应该一开始就设计一个大型网站吗？  传统企业转型，钱多，召集上百人开发一个大型网站，等开发完结束上线，发现已经成千上百类似的网站，直接夭折。 出生 12graph LRA[无名小网站] --&gt;B[访问量低 一台服务器满足]      当业务发展越来越好，访问用户越来越多，面临问题  性能越来越差 越来越多的数据导致存储空间不足">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统架构演进之路">
+<meta property="og:url" content="https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="演进之路演进之路以一个网站为例  网站一开始就是大型的吗？ 我们应该一开始就设计一个大型网站吗？  传统企业转型，钱多，召集上百人开发一个大型网站，等开发完结束上线，发现已经成千上百类似的网站，直接夭折。 出生 12graph LRA[无名小网站] --&gt;B[访问量低 一台服务器满足]      当业务发展越来越好，访问用户越来越多，面临问题  性能越来越差 越来越多的数据导致存储空间不足">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-23.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-37.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-48.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-57.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-2.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-21.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-27.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-25.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-34.png">
+<meta property="article:published_time" content="2020-05-05T12:11:14.000Z">
+<meta property="article:modified_time" content="2020-05-05T14:45:50.583Z">
+<meta property="article:author" content="haung ding">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="设计思想">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-23.png">
+    
+    <link rel="shortcut icon" href="/hexo/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/hexo/img/brand.jpg)">
+      <div class="brand">
+        <a href="/hexo/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/hexo/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">haung ding</h5>
+          <a href="mailto:2402090592@qq.com" title="2402090592@qq.com" class="mail">2402090592@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/huang-ding" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">分布式系统架构演进之路</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">分布式系统架构演进之路</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-05-05T12:11:14.000Z" itemprop="datePublished" class="page-time">
+  2020-05-05
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#演进之路"><span class="post-toc-number">1.</span> <span class="post-toc-text">演进之路</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#架构设计思想总结"><span class="post-toc-number">2.</span> <span class="post-toc-text">架构设计思想总结</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#架构设计误区"><span class="post-toc-number">3.</span> <span class="post-toc-text">架构设计误区</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-distributed-evolution"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">分布式系统架构演进之路</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-05-05 20:11:14" datetime="2020-05-05T12:11:14.000Z"  itemprop="datePublished">2020-05-05</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="演进之路"><a href="#演进之路" class="headerlink" title="演进之路"></a>演进之路</h3><p>演进之路以一个网站为例</p>
+<ul>
+<li>网站一开始就是大型的吗？</li>
+<li>我们应该一开始就设计一个大型网站吗？</li>
+</ul>
+<p>传统企业转型，钱多，召集上百人开发一个大型网站，等开发完结束上线，发现已经成千上百类似的网站，直接夭折。</p>
+<p><strong>出生</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A[无名小网站] --&gt;B[访问量低 一台服务器满足]</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-23.png" alt="技术架构图"></p>
+<hr>
+<p>当业务发展越来越好，访问用户越来越多，<strong>面临问题</strong></p>
+<ul>
+<li>性能越来越差</li>
+<li>越来越多的数据导致存储空间不足</li>
+</ul>
+<p><strong>解决方式</strong></p>
+<ul>
+<li>应用服务分离</li>
+<li>数据服务分离</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A[应用服务器,处理业务逻辑]</span><br><span class="line">B[数据库服务器,快速磁盘检索和数据缓存]</span><br><span class="line">C[文件服务器,存储用户上传文件]</span><br><span class="line">A--&gt;B</span><br><span class="line">A--&gt;C</span><br></pre></td></tr></table></figure>
+
+<p><strong>不同的服务器承担不同的服务角色，并发处能利和数据存储空间性能提升</strong></p>
+<p><img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-37.png" alt="技术架构图"></p>
+<hr>
+<p>发展了一下</p>
+<p>随着用户逐渐增加，<strong>网站再次面临挑战</strong></p>
+<p>数据库压力太大导致访问延迟，进行影响整个网站的性能，用户体验收到影响</p>
+<p><strong>当前用什么技术可以直接了当的解决问题，团队的使用了解情况，最简单的最快速的，技术的选型是有阶段性的，未到阶段不要使用太复杂的解决方案，给团队提高成本</strong></p>
+<p><strong>解决方式，使用缓存改善性能</strong></p>
+<ul>
+<li>本地缓存<ul>
+<li>速度极快</li>
+<li>数据量有限</li>
+<li>和应用程序争抢内存</li>
+</ul>
+</li>
+<li>远程分布式缓存<ul>
+<li>按需扩展</li>
+<li>性能相对本地较差</li>
+</ul>
+</li>
+<li>常用组件<ul>
+<li>redis</li>
+<li>memcache</li>
+</ul>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-48.png" alt="系统架构图" title="">
+                </div>
+                <div class="image-caption">系统架构图</div>
+            </figure>
+
+<hr>
+<p>随着用户逐渐增多，<strong>单一应用服务器面临新的问题</strong>：</p>
+<ul>
+<li>能够处理的请求连接有限</li>
+<li>网站访问高峰期</li>
+<li>应用服务器成为网站瓶颈</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>应用服务器集群，按需扩展<ul>
+<li>负载均衡调度服务器，需要高性能，高并发<ul>
+<li>软件<ul>
+<li>Apache <strong>Nginx</strong> Reverse-proxy pWEB</li>
+<li><strong>LVS</strong></li>
+</ul>
+</li>
+<li>硬件<ul>
+<li><strong>F5</strong></li>
+</ul>
+</li>
+<li>DNS负载均衡，利用域名对应多个IP</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>扩容（一般不考虑）</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_21-57.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>发展问题，使用缓存后虽然减轻了数据库压力，但是<strong>面临新的问题:</strong></p>
+<ul>
+<li>缓存访问不命中</li>
+<li>缓存过期</li>
+<li>全部的写操作都需要访问数据库</li>
+<li>当达到一定规模后，<strong>数据库负载压力过大，成为系统瓶颈</strong></li>
+</ul>
+<p>解决方式</p>
+<ul>
+<li>数据库读写分离</li>
+</ul>
+<p>引发问题，数据库访问模块，数据存储层不应该和应用层代码有关系，解决方式</p>
+<ul>
+<li>在Mybatis开发插件</li>
+<li>mycat</li>
+<li>Sharding-JDBC</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-2.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>发展问题，用户规模导致地域越来越多，地域网络环境差别很大，<strong>面临问题</strong></p>
+<ul>
+<li>如何保证用户的访问体验</li>
+<li>不至于访问慢流失用户</li>
+</ul>
+<p>解决方案</p>
+<ul>
+<li>反向代理<ul>
+<li>缓存静态资源</li>
+<li>部署在数据中心，可以和负载均衡是同一个如nginx</li>
+</ul>
+</li>
+<li>地区CDN加速<ul>
+<li>适用于静态资源</li>
+<li>部署在运营商，如电信运营商</li>
+</ul>
+</li>
+</ul>
+<p>加快用户访问速度，减轻后端服务器负载压力</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>发展问题，单文件服务器，单数据库，面临问题：</p>
+<ul>
+<li>存不下日益增长的数据</li>
+</ul>
+<p>解决问题：</p>
+<ul>
+<li>分布式文件系统（存储小文件，图片）<ul>
+<li>FastDFS</li>
+<li>TFS</li>
+</ul>
+</li>
+<li>分布式数据库系统(分库分表)<ul>
+<li>Mycat</li>
+<li>Sharding-JDBC</li>
+</ul>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>发展问题，数据的存储需求和检索需求越来越复杂，<strong>面临问题</strong></p>
+<ul>
+<li>存储的字段差异较大，骷髅表</li>
+<li>复杂的文本检索</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>使用NoSQL<ul>
+<li>MongoDB</li>
+<li>elasticsearch</li>
+</ul>
+</li>
+<li>搜索引擎<ul>
+<li>lucene</li>
+<li>solr</li>
+<li>elasticsearch</li>
+</ul>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-7.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>发展问题，网站越来越好，业务越来越大，越来越复杂，<strong>面临问题</strong>：</p>
+<ul>
+<li><strong>应用程序变得无比庞大</strong></li>
+<li>迭代周期越来越快</li>
+<li>牵一发动全身</li>
+<li>怎么应对快速的业务发展需要</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>业务拆分，按照业务拆分多个为应用程序如，订单，首页，商家，推送</li>
+<li>通过链接，MQ，数据存储建立连接<ul>
+<li>消息队列，RabbitMQ，ActiveMQ，Kafka</li>
+</ul>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-21.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+
+
+<hr>
+<p>发展问题，业务规模不断增大，应用拆分越来越小，越来越多，<strong>面临问题</strong></p>
+<ul>
+<li>应用间的关系越来越复杂，应用中存在大量相同的业务操作</li>
+<li>后端数据库成千上百台应用服务器连接，数据库连接池资源不足</li>
+</ul>
+<p>解决方案</p>
+<ul>
+<li><p>分布式服务(服务化)</p>
+<ul>
+<li>SOA架构<ul>
+<li>ESB 企业服务总线</li>
+<li>中心点瓶颈</li>
+<li>服务管理较好，可以在ESB处理</li>
+</ul>
+</li>
+<li>微服务<ul>
+<li>无中心点</li>
+<li>服务框架<ul>
+<li>Dubbo</li>
+<li>SoringCloud</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>引用配置中心</p>
+<ul>
+<li>Dubbo - zk</li>
+<li>SpringCloud config</li>
+<li>Disconf 百度</li>
+<li>Config-toolkit 当当</li>
+<li>Diamond 阿里</li>
+<li>Apollo 携程</li>
+</ul>
+<p><img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-27.png" alt=""></p>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-25.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p>再往后，需要什么？</p>
+<ul>
+<li>数据挖掘</li>
+<li>数据分析</li>
+<li>推荐等业务需求</li>
+<li>庞大的系统监控</li>
+<li>问题分析</li>
+</ul>
+<p>解决方案</p>
+<ul>
+<li>大数据技术<ul>
+<li>Hadoop</li>
+<li>Spark</li>
+</ul>
+</li>
+<li>监控<ul>
+<li>Zabbix</li>
+<li>ElasticSearch+beats+Kibana</li>
+</ul>
+</li>
+<li>日志分析<ul>
+<li>ELK集中日志分析系统</li>
+</ul>
+</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/base/20-5-5_22-34.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<hr>
+<p><strong>以上为当前服务演进过程，当前的service mesh 还未开始琢磨，后续再修改</strong></p>
+<h3 id="架构设计思想总结"><a href="#架构设计思想总结" class="headerlink" title="架构设计思想总结"></a>架构设计思想总结</h3><ul>
+<li>分而治之</li>
+<li>随着网站所需灵活应对</li>
+<li>业务发展驱动技术发展，技术发展反哺业务</li>
+<li>软件系统的价值在于它能够为用户提供什么价值，在于网站能做什么，而不在于它是怎么做的<ul>
+<li>不要新技术直接往上堆，考虑当前系统架构和团队技术栈</li>
+</ul>
+</li>
+</ul>
+<h3 id="架构设计误区"><a href="#架构设计误区" class="headerlink" title="架构设计误区"></a>架构设计误区</h3><ul>
+<li>一味追随大公司的解决方案</li>
+<li>为了技术而技术<ul>
+<li>新技术可能存在多种系统漏洞</li>
+</ul>
+</li>
+<li>企图用技术解决所有问题<ul>
+<li>多探讨业务，看是否可以从业务层面解决问题</li>
+</ul>
+</li>
+</ul>
+<p><strong>技术是用来解决业务问题的，而业务的问题，也可以通过业务的手段解决</strong></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+
+        
+        有任何建议请留言邮箱
+        
+    </div>
+    
+    <footer>
+        <a href="https://huang-ding.github.io/hexo">
+            <img src="/hexo/img/avatar.jpg" alt="haung ding">
+            haung ding
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3/" rel="tag">设计思想</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&title=《分布式系统架构演进之路》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&title=《分布式系统架构演进之路》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《分布式系统架构演进之路》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/hexo/2020/04/29/evolution-io/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">java io 演进</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>haung ding &copy; 2020</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&title=《分布式系统架构演进之路》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&title=《分布式系统架构演进之路》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《分布式系统架构演进之路》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://huang-ding.github.io/hexo/2020/05/05/distributed-evolution/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '不看了吗';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎欢迎';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
