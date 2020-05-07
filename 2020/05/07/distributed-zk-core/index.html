@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>zookeeper核心概念 | 子非鱼 | 不轻信别人的结论，实践才是检验真理的唯一标准</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="分布式,zk">
+    <meta name="description" content="Session会话 一个客户端链接一个会话，由zk分配唯一会话id；列:session id &#x3D; 0x1001bb1f6720002  客户端以特定的时间间隔发送心跳以保持会话有效；tickTime  超过会话超时时间未收到客户端心跳，则判定客户端挂了；(默认2倍tickTime)  minSessionTimeout : (No Java system property) New in 3.3.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper核心概念">
+<meta property="og:url" content="https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="Session会话 一个客户端链接一个会话，由zk分配唯一会话id；列:session id &#x3D; 0x1001bb1f6720002  客户端以特定的时间间隔发送心跳以保持会话有效；tickTime  超过会话超时时间未收到客户端心跳，则判定客户端挂了；(默认2倍tickTime)  minSessionTimeout : (No Java system property) New in 3.3.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://vlog.xrqiche.cn//hexo/netty/nio/20-5-6_21-7.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/netty/nio/20-5-6_21-8.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-7_21-40.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-7_21-53.png">
+<meta property="article:published_time" content="2020-05-07T11:55:40.000Z">
+<meta property="article:modified_time" content="2020-05-07T14:14:16.359Z">
+<meta property="article:author" content="haung ding">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="zk">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://vlog.xrqiche.cn//hexo/netty/nio/20-5-6_21-7.png">
+    
+    <link rel="shortcut icon" href="/hexo/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/hexo/img/brand.jpg)">
+      <div class="brand">
+        <a href="/hexo/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/hexo/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">haung ding</h5>
+          <a href="mailto:2402090592@qq.com" title="2402090592@qq.com" class="mail">2402090592@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/huang-ding" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">zookeeper核心概念</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">zookeeper核心概念</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-05-07T11:55:40.000Z" itemprop="datePublished" class="page-time">
+  2020-05-07
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Session会话"><span class="post-toc-number">1.</span> <span class="post-toc-text">Session会话</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#数据模型"><span class="post-toc-number">2.</span> <span class="post-toc-text">数据模型</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ACL-Permissions"><span class="post-toc-number">3.</span> <span class="post-toc-text">ACL Permissions</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Builtin-ACL-Schemes"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">Builtin ACL Schemes</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Zookeeper中的时间"><span class="post-toc-number">4.</span> <span class="post-toc-text">Zookeeper中的时间</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#watch机制"><span class="post-toc-number">5.</span> <span class="post-toc-text">watch机制</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Zookeeper特性"><span class="post-toc-number">6.</span> <span class="post-toc-text">Zookeeper特性</span></a></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-distributed-zk-core"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">zookeeper核心概念</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-05-07 19:55:40" datetime="2020-05-07T11:55:40.000Z"  itemprop="datePublished">2020-05-07</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h3 id="Session会话"><a href="#Session会话" class="headerlink" title="Session会话"></a>Session会话</h3><ul>
+<li><p>一个客户端链接一个会话，由zk分配唯一会话id；列:session id = 0x1001bb1f6720002</p>
+</li>
+<li><p>客户端以特定的时间间隔发送心跳以保持会话有效；<strong>tickTime</strong></p>
+</li>
+<li><p>超过会话超时时间未收到客户端心跳，则判定客户端挂了；(默认2倍tickTime)</p>
+<ul>
+<li><em>minSessionTimeout</em> : (No Java system property) <strong>New in 3.3.0:</strong> the minimum session timeout in milliseconds that the server will allow the client to negotiate. Defaults to 2 times the <strong>tickTime</strong>.</li>
+<li><em>maxSessionTimeout</em> : (No Java system property) <strong>New in 3.3.0:</strong> the maximum session timeout in milliseconds that the server will allow the client to negotiate. Defaults to 20 times the <strong>tickTime</strong>.</li>
+</ul>
+</li>
+<li><p>会话中的请求按照FIFO(fast in fast on)顺序执行.</p>
+<p><img src="http://vlog.xrqiche.cn//hexo/netty/nio/20-5-6_21-7.png" alt=""></p>
+</li>
+</ul>
+<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/netty/nio/20-5-6_21-8.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<ul>
+<li><p><strong>层次名称空间</strong></p>
+<ul>
+<li>类型Unix文件系统，以(/)为根目录</li>
+<li>区别：节点可以包含与之关联的数据以及子节点(即是文件也是文件夹)</li>
+<li>节点的路径总是表示未<strong>规范的</strong>，<strong>绝对的</strong>，<strong>斜杠分隔</strong>的路径</li>
+</ul>
+</li>
+<li><p><strong>znode</strong></p>
+<ul>
+<li><p>名称唯一，命名规范</p>
+<ul>
+<li>null字符(\u000)不能作为路劲的一部分</li>
+<li>\u0001-\u0019和\u007F-\u009F不能使用，因为他们不能很好的显示，或者以令人困惑的方式</li>
+<li>\ud800-uf8fff,\uFFF0-uFFFF不可使用</li>
+<li>“.”字符可以用作另一个名称的一部分，但是“.”和”..”不能单独用于指示路劲上的节点，因为ZK不使用相对路径，“/a/b/./c”或“c/b/b/../”无效</li>
+<li>“zookeeper”是保留节点名称</li>
+</ul>
+</li>
+<li><p>节点类型</p>
+<ul>
+<li><p>持久</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create /app1 666</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>顺序</p>
+<ul>
+<li>10位十进制序号</li>
+<li>每个父节点一个计算器</li>
+<li>计数器是带符号int(4字节)，到2147483647后将溢出为负值</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">create -e /app2 666</span><br><span class="line">nodeName: app20000000001</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>临时</p>
+<p>和客户端挂钩，当客户端断开时销毁</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create -s /app3 666</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>临时顺序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create -s -e /app4 666</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>节点数据构成</p>
+<ul>
+<li><p>节点数据：存储的协调数据(状态信息，配置信息，位置信息等)</p>
+</li>
+<li><p>节点元数据(stat结构)</p>
+<p>  <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-7_21-40.png" alt=""></p>
+</li>
+<li><p>数据量上限：1M</p>
+</li>
+<li><p>访问控制列表 ACLs are made up of pairs of <em>(scheme:expression, perms)*，the pair *(ip:19.22.0.0/16, READ)</em> </p>
+<ul>
+<li><h3 id="ACL-Permissions"><a href="#ACL-Permissions" class="headerlink" title="ACL Permissions"></a>ACL Permissions</h3><ul>
+<li><strong>CREATE</strong>: you can create a child node</li>
+<li><strong>READ</strong>: you can get data from a node and list its children.</li>
+<li><strong>WRITE</strong>: you can set data for a node</li>
+<li><strong>DELETE</strong>: you can delete a child node</li>
+</ul>
+</li>
+<li><h4 id="Builtin-ACL-Schemes"><a href="#Builtin-ACL-Schemes" class="headerlink" title="Builtin ACL Schemes"></a>Builtin ACL Schemes</h4><ul>
+<li><strong>world</strong> has a single id, <em>anyone</em>, that represents anyone.</li>
+<li><strong>auth</strong> is a special scheme which ignores any provided expression and instead uses the current user, credentials, and scheme. Any expression (whether <em>user</em> like with SASL authentication or <em>user:password</em> like with DIGEST authentication) provided is ignored by the ZooKeeper server when persisting the ACL. However, the expression must still be provided in the ACL because the ACL must match the form <em>scheme:expression:perms</em>. This scheme is provided as a convenience as it is a common use-case for a user to create a znode and then restrict access to that znode to only that user. If there is no authenticated user, setting an ACL with the auth scheme will fail.</li>
+<li><strong>digest</strong> uses a <em>username:password</em> string to generate MD5 hash which is then used as an ACL ID identity. Authentication is done by sending the <em>username:password</em> in clear text. When used in the ACL the expression will be the <em>username:base64</em> encoded <em>SHA1</em> password <em>digest</em>.</li>
+<li><strong>ip</strong> uses the client host IP as an ACL ID identity. The ACL expression is of the form <em>addr/bits</em> where the most significant <em>bits</em> of <em>addr</em> are matched against the most significant <em>bits</em> of the client host IP.</li>
+<li><strong>x509</strong> uses the client X500 Principal as an ACL ID identity. The ACL expression is the exact X500 Principal name of a client. When using the secure port, clients are automatically authenticated and their auth info for the x509 scheme is set.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Zookeeper中的时间"><a href="#Zookeeper中的时间" class="headerlink" title="Zookeeper中的时间"></a>Zookeeper中的时间</h3><ul>
+<li><strong>Zxid</strong> zookeeper中每次更改操作都对应一个唯一的事物id，称为zxid，它是一个<strong>全局有序的戳记</strong>，如果zxid1小于zxid2，则zxid1发送在zxid2之前</li>
+<li><strong>Version number</strong> 版本号，对节点的每次更改都会导该改节点的版本号之一增加</li>
+<li><strong>Ticks ** 当使用多服务器Zookeeper时，服务器使用‘’滴答‘’来定义时间的类型，如状态上传，会话超时，对等点之间的链接超时。滴答时间仅提供最小会话超时(滴答2倍)间接公开；</strong>如果客户端请求的会话时间小于最小会话超时，服务器将告诉客户端实际上是最小会话超时**</li>
+<li><strong>Real</strong> <strong>Time</strong> Zookeeper除了在znode 创建和修改时将时间戳放入stat结构之外，其他根本不使用RealTime或时钟时间</li>
+</ul>
+<h3 id="watch机制"><a href="#watch机制" class="headerlink" title="watch机制"></a>watch机制</h3><figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-7_21-53.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>客户端可以在znodes上设置watch，监听znode变化</p>
+<p>设置命令 -w 代表设置watch</p>
+<ul>
+<li>config [-c] [-w] [-s]   </li>
+<li>get [-s] [-w] path</li>
+<li>ls [-s] [-w] [-R] path</li>
+<li>stat [-w] path</li>
+</ul>
+<p>watch类型</p>
+<ul>
+<li>getData() 监听数据变化</li>
+<li>getChildren() 监听子节点变化</li>
+<li>exists() 是否存在</li>
+</ul>
+<p>触发watch事件</p>
+<ul>
+<li><p>Created event: </p>
+<p>Enabled with a call to exists.</p>
+</li>
+<li><p>Deleted event:</p>
+<p>Enabled with a call to exists, getData, and getChildren.</p>
+</li>
+<li><p>Changed event:</p>
+<p>Enabled with a call to exists and getData.</p>
+</li>
+<li><p>Child event:</p>
+<p>Enabled with a call to getChildren.</p>
+</li>
+</ul>
+<p><strong>watch的重要特性</strong></p>
+<ul>
+<li>一次性触发：watch触发后<strong>即被删除</strong>，要持续监控变化，则需要<strong>持续的设置watch</strong></li>
+<li>有序性：客户端先得到watch通知，后才会看到变好结果</li>
+</ul>
+<p><strong>watch注意事项</strong></p>
+<ul>
+<li>watch是一次性触发器；如果您获得一个watch事件，并且希望得到关于未来的更改通知，需要设置另一个watch</li>
+<li>因为watch是一次性触发器，并且在获取事件和发送获取watch的新请求之前存在时间间隔，所以不能可靠的获取到节点发生的每个更改</li>
+<li>一个watch对象只会被特定的通知触发一次。如果一个watch对象同时注册了exists和getData，当节点删除事件对exists和getData都有效，但是只会调用一次</li>
+</ul>
+<p>使用zkclient 监听watch事件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZkClientWatchDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建一个zk客户端</span></span><br><span class="line">        ZkClient client = <span class="keyword">new</span> ZkClient(<span class="string">"localhost:2181"</span>);</span><br><span class="line">        client.setZkSerializer(<span class="keyword">new</span> MyZkSerializer());</span><br><span class="line"></span><br><span class="line">        client.subscribeDataChanges(<span class="string">"/mike/a"</span>, <span class="keyword">new</span> IZkDataListener() &#123;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataDeleted</span><span class="params">(String dataPath)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"----收到节点被删除了-------------"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataChange</span><span class="params">(String dataPath, Object data)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"----收到节点数据变化："</span> + data + <span class="string">"-------------"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span> * <span class="number">60</span> * <span class="number">2</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyZkSerializer</span> <span class="keyword">implements</span> <span class="title">ZkSerializer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String charset = <span class="string">"UTF-8"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">deserialize</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> <span class="keyword">throws</span> ZkMarshallingError </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(bytes, charset);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ZkMarshallingError(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] serialize(Object obj) <span class="keyword">throws</span> ZkMarshallingError &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> String.valueOf(obj).getBytes(charset);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ZkMarshallingError(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Zookeeper特性"><a href="#Zookeeper特性" class="headerlink" title="Zookeeper特性"></a>Zookeeper特性</h3><ul>
+<li>顺序一致性：保证客户端操作是按照顺序生效的</li>
+<li>原子性：更新成功或失败，没有部分结果</li>
+<li>单个系统映像：无论链接那个服务器，客户端都将看到相同的内容</li>
+<li>可靠性：数据的变更不会丢失，除非被客户覆盖修改，数据变更时先写日志文件，再变更，如果是集群将发送集群变更命令，保证数据写入的可靠性</li>
+<li>及时性：保证系统的客户端当时读取到的数据是最新的</li>
+</ul>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+
+        
+        有任何建议请留言邮箱
+        
+    </div>
+    
+    <footer>
+        <a href="https://huang-ding.github.io/hexo">
+            <img src="/hexo/img/avatar.jpg" alt="haung ding">
+            haung ding
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/zk/" rel="tag">zk</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&title=《zookeeper核心概念》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&title=《zookeeper核心概念》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《zookeeper核心概念》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/hexo/2020/05/06/distributed-zk/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">zk入门</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>haung ding &copy; 2020</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&title=《zookeeper核心概念》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&title=《zookeeper核心概念》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《zookeeper核心概念》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://huang-ding.github.io/hexo/2020/05/07/distributed-zk-core/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '不看了吗';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎欢迎';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
