@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>分布式系统设计重要理论 | 子非鱼 | 不轻信别人的结论，实践才是检验真理的唯一标准</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="分布式">
+    <meta name="description" content="分布式基石-CAP定理CPA定理（CAP theorem），又称布鲁尔定理（Eric Brewer），1998年第一次提出。 最初提出是指分布式数据存储不可能同时提供以下三种保证中的两种以上  一致性（Consistency）：每次读取收到的消息是最新的。 可用性（Availability）：每个请求都会收到(非错误)响应。 分区容错性（Partition tolerance）：尽管节点之间的网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统设计重要理论">
+<meta property="og:url" content="https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/index.html">
+<meta property="og:site_name" content="子非鱼">
+<meta property="og:description" content="分布式基石-CAP定理CPA定理（CAP theorem），又称布鲁尔定理（Eric Brewer），1998年第一次提出。 最初提出是指分布式数据存储不可能同时提供以下三种保证中的两种以上  一致性（Consistency）：每次读取收到的消息是最新的。 可用性（Availability）：每个请求都会收到(非错误)响应。 分区容错性（Partition tolerance）：尽管节点之间的网络">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-54.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-55.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-59.png">
+<meta property="og:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_22-16.png">
+<meta property="article:published_time" content="2020-05-12T13:27:55.000Z">
+<meta property="article:modified_time" content="2020-05-13T14:50:20.854Z">
+<meta property="article:author" content="haung ding">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-54.png">
+    
+    <link rel="shortcut icon" href="/hexo/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/hexo/img/brand.jpg)">
+      <div class="brand">
+        <a href="/hexo/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/hexo/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">haung ding</h5>
+          <a href="mailto:2402090592@qq.com" title="2402090592@qq.com" class="mail">2402090592@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/hexo/categories"  >
+                <i class="icon icon-lg icon-th-list"></i>
+                Categories
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/huang-ding" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">分布式系统设计重要理论</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="Search">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">分布式系统设计重要理论</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2020-05-12T13:27:55.000Z" itemprop="datePublished" class="page-time">
+  2020-05-12
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#分布式基石-CAP定理"><span class="post-toc-number">1.</span> <span class="post-toc-text">分布式基石-CAP定理</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#数据一致性模型"><span class="post-toc-number">2.</span> <span class="post-toc-text">数据一致性模型</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#BASE理论"><span class="post-toc-number">3.</span> <span class="post-toc-text">BASE理论</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#业务系统设计的原则"><span class="post-toc-number">4.</span> <span class="post-toc-text">业务系统设计的原则</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#墨菲定律"><span class="post-toc-number">4.1.</span> <span class="post-toc-text">墨菲定律</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#康威定律"><span class="post-toc-number">4.2.</span> <span class="post-toc-text">康威定律</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-distributed-core-theory"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">分布式系统设计重要理论</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2020-05-12 21:27:55" datetime="2020-05-12T13:27:55.000Z"  itemprop="datePublished">2020-05-12</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h4 id="分布式基石-CAP定理"><a href="#分布式基石-CAP定理" class="headerlink" title="分布式基石-CAP定理"></a>分布式基石-CAP定理</h4><p>CPA定理（CAP theorem），又称布鲁尔定理（Eric Brewer），1998年第一次提出。</p>
+<p>最初提出是指分布式数据存储不可能同时提供以下三种保证中的两种以上</p>
+<ul>
+<li>一致性（Consistency）：每次读取收到的消息是最新的。</li>
+<li>可用性（Availability）：每个请求都会收到(非错误)响应。</li>
+<li>分区容错性（Partition tolerance）：尽管节点之间的网络不通导致分区，系统可以继续运行</li>
+</ul>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-54.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>事实上，不仅仅是分布式数据存储，所有的<strong>分布式系统都必须在CAP这三点之间权衡</strong></p>
+<p>一般分布式系统需要保证分区容错性，在此基础上进行C和A的取舍</p>
+<p>保证分区容错性可通过多个节点保证，但是会出现有状态服务的一致性问题，当保证节点之间状态数据一致时，可能导致系统短暂不可用，保证一致性丧失可用性，网络同步数据需要一定时间；</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-55.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<p>也有满足CAP的应用出现，实现CAP的一部分，舍弃一部分，每个地方牺牲一点，做到每个的部分满足，在业务代码做细节控制</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_21-59.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+
+
+<h4 id="数据一致性模型"><a href="#数据一致性模型" class="headerlink" title="数据一致性模型"></a>数据一致性模型</h4><p>如果数据读取，写入，更新的结果是可以预测的，我们说它遵循数据一致性模型</p>
+<ul>
+<li>严格一致性（Strict Consistency）（强）不论在那个节点，看到的资源都是统一的结果</li>
+<li>顺序一致性（Sequenctial Consistency）（弱）节点的数据变动和操作的顺序保持一致，类似ZK</li>
+<li>最终一致性（Eventual Consistency）（弱）所有数据副本最终都会变的一致，但是不保证执行顺序</li>
+</ul>
+<p>强弱划分比较粗狂，但是容易理解，并发编程和分布式计算领域有更多细分模型，如会话一致性等</p>
+<p>分布式算法基石：<a href="https://zhuanlan.zhihu.com/p/31780743" target="_blank" rel="noopener">Paxos算法</a></p>
+<h4 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h4><p>BASE是Basically Available（基本可用）Soft state（软状态）和Eventual consistency（最终一致性），三个短语缩写</p>
+<ul>
+<li>基本可用：可能是部分功能不可用或者响应时间延长，如熔断降级处理</li>
+<li>软状态：不同系统/节点之间，数据存在过度状态，前提是数据状态不影响业务流程，且时间有限</li>
+<li>最终一致：经过系统内部协调机制，最终所有节点保存一致（分布式系统的一致性不一定是指数据保持一致）</li>
+</ul>
+<p>BASE是指导理论用于设计分布式系统，兼顾了CAP三者，降低了一致性要求，需要友好的应用程序协调机制</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="http://vlog.xrqiche.cn/hexo/distributed/zk/20-5-13_22-16.png" alt="" title="">
+                </div>
+                <div class="image-caption"></div>
+            </figure>
+
+<h4 id="业务系统设计的原则"><a href="#业务系统设计的原则" class="headerlink" title="业务系统设计的原则"></a>业务系统设计的原则</h4><h5 id="墨菲定律"><a href="#墨菲定律" class="headerlink" title="墨菲定律"></a>墨菲定律</h5><p>墨菲定律（Murphy`s law）是一种心理学效应，由爱德华.墨菲提出</p>
+<p>原句：如果有两种或两种以上的方式做某件事情，而其中一种选择方式将导致灾难，则必定有人会做出这种选择。</p>
+<p>本质：如果事情有变坏的可能，不管可能性多小，它都会发生</p>
+<p>如：觉得功能很简单，很快弄完，但是时间一拖再拖；觉得某个技术栈很简单，所以了解一部分之后马上就想来用，结果付出更多的时间找bug和学习；觉得某段代码复杂可能会有问题，觉得TMD居然真的有问题；觉得程序性能有问题，结果又TMD出问题。。。类似</p>
+<p>系统设计和架构上的理解：</p>
+<ol>
+<li>任何事情都没有表面看起来那么简单</li>
+<li>所有的事情都会比你预计的时间长</li>
+<li>会出错的事情总会出错</li>
+<li>如果你担心每个bug出现问题，那么它就更加可能发生</li>
+</ol>
+<h5 id="康威定律"><a href="#康威定律" class="headerlink" title="康威定律"></a>康威定律</h5><p>设计系统的架构受制于产生这些设计的组织的沟通结构———-Conways Law</p>
+<p>系统设计上的思考：</p>
+<ol>
+<li>系统架构是公司组织架构的反映</li>
+<li>应该按照业务闭环进行系统拆分/组织架构划分，实现闭环/高内聚/低耦合，减少沟通成本（在合适时机进行系统拆分，不要一开始就把系统服务拆分的非常细，虽然闭环，但是每个人维护的系统多，维护成本高）</li>
+<li>如果沟通出现问题，那么应该考虑进行系统和组织架构的调整</li>
+<li>时间再多一件事情也不可能做的完美，但总有时间做完一件事情</li>
+</ol>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+
+        
+        有任何建议请留言邮箱
+        
+    </div>
+    
+    <footer>
+        <a href="https://huang-ding.github.io/hexo">
+            <img src="/hexo/img/avatar.jpg" alt="haung ding">
+            haung ding
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&title=《分布式系统设计重要理论》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&title=《分布式系统设计重要理论》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《分布式系统设计重要理论》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/hexo/2020/05/12/distributed-zk-cluster/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">zookeeper集群</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+            <span>This blog is licensed under a <a rel="license noopener" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>haung ding &copy; 2020</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&title=《分布式系统设计重要理论》 — 子非鱼&pic=https://huang-ding.github.io/hexo/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&title=《分布式系统设计重要理论》 — 子非鱼&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《分布式系统设计重要理论》 — 子非鱼&url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/&via=https://huang-ding.github.io/hexo" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="//api.qrserver.com/v1/create-qr-code/?data=https://huang-ding.github.io/hexo/2020/05/12/distributed-core-theory/" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/hexo/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '不看了吗';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '欢迎欢迎';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
