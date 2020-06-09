@@ -146,6 +146,65 @@
     <ul class="post-list">
     
         <li class="post-list-item fade">
+            <article id="post-docker-address-change"
+  class="article-card article-type-post" itemprop="blogPost">
+
+    <div class="post-meta">
+        <time class="post-time" title="2020-06-09 14:54:14" datetime="2020-06-09T06:54:14.000Z"  itemprop="datePublished">2020-06-09</time>
+
+        
+
+
+    </div>
+
+    
+
+
+  
+    <h3 class="post-title" itemprop="name">
+      <a class="post-title-link" href="/hexo/2020/06/09/docker-address-change/">Docker 原地址变更</a>
+    </h3>
+  
+
+
+
+
+    <div class="post-content" id="post-content" itemprop="postContent">
+
+    
+        
+停止docker 
+1service docker stop
+
+创建移动的文件目录
+1mkdir /mnt/sdc/docker
+
+复制docker源文件到新目录
+1mv /var/lib/docker/* /mnt/sdc/docker/
+
+创建软连接
+1ln -s /mnt/sdc/docker/ /var/lib/docker
+
+重新启动docker
+1service docker ...
+    
+
+        <a href="/hexo/2020/06/09/docker-address-change/" class="post-more waves-effect waves-button">
+            Continue reading...
+        </a>
+    </div>
+    
+    <div class="post-footer">
+        
+	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/Docker/" rel="tag">Docker</a></li></ul>
+
+    </div>
+    
+</article>
+
+        </li>
+    
+        <li class="post-list-item fade">
             <article id="post-dubbo-characteristic"
   class="article-card article-type-post" itemprop="blogPost">
 
@@ -600,58 +659,6 @@ Watch能监听数据变化
     
 
         <a href="/hexo/2020/05/08/distributed-zk-apply/" class="post-more waves-effect waves-button">
-            Continue reading...
-        </a>
-    </div>
-    
-    <div class="post-footer">
-        
-	<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/zk/" rel="tag">zk</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/hexo/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li></ul>
-
-    </div>
-    
-</article>
-
-        </li>
-    
-        <li class="post-list-item fade">
-            <article id="post-distributed-zk-core"
-  class="article-card article-type-post" itemprop="blogPost">
-
-    <div class="post-meta">
-        <time class="post-time" title="2020-05-07 19:55:40" datetime="2020-05-07T11:55:40.000Z"  itemprop="datePublished">2020-05-07</time>
-
-        
-
-
-    </div>
-
-    
-
-
-  
-    <h3 class="post-title" itemprop="name">
-      <a class="post-title-link" href="/hexo/2020/05/07/distributed-zk-core/">zookeeper核心概念</a>
-    </h3>
-  
-
-
-
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        Session会话
-一个客户端链接一个会话，由zk分配唯一会话id；列:session id = 0x1001bb1f6720002
-
-客户端以特定的时间间隔发送心跳以保持会话有效；tickTime
-
-超过会话超时时间未收到客户端心跳，则判定客户端挂了；(默认2倍tickTime)
-
-minSessionTimeout : (No Java system property) New in 3...
-    
-
-        <a href="/hexo/2020/05/07/distributed-zk-core/" class="post-more waves-effect waves-button">
             Continue reading...
         </a>
     </div>

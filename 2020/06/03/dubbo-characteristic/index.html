@@ -29,7 +29,7 @@
 <meta property="og:description" content="启动时检查Dubbo缺省会在启动时检查服务是否可用，不可用时抛出异常，阻止程序(spring)初始化完成 通过check&#x3D;&quot;true&#x2F;false&quot;配置,可通过多种方式，spring配置文件，dubbo配置文件，jvm -D参数等 spring配置示例文件123&lt;dubbo:reference interface&#x3D;&quot;com.foo.BarService&quot; check&#x3D;&quot;fa">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-06-03T12:16:32.000Z">
-<meta property="article:modified_time" content="2020-06-03T14:06:35.544Z">
+<meta property="article:modified_time" content="2020-06-04T12:43:40.608Z">
 <meta property="article:author" content="haung ding">
 <meta property="article:tag" content="dubbo">
 <meta name="twitter:card" content="summary">
@@ -156,7 +156,7 @@
     <aside class="post-widget">
         <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
             <h4>TOC</h4>
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#启动时检查"><span class="post-toc-number">1.</span> <span class="post-toc-text">启动时检查</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#spring配置示例文件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">spring配置示例文件</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#dubbo-properties"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">dubbo.properties</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#多版本"><span class="post-toc-number">2.</span> <span class="post-toc-text">多版本</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#示例"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">示例</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#服务分组"><span class="post-toc-number">3.</span> <span class="post-toc-text">服务分组</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#dubbo提供分组聚合，"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">dubbo提供分组聚合，</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#参数验证"><span class="post-toc-number">4.</span> <span class="post-toc-text">参数验证</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地伪装"><span class="post-toc-number">5.</span> <span class="post-toc-text">本地伪装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#return"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">return</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#throw"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">throw</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#forec-和-fail"><span class="post-toc-number">5.3.</span> <span class="post-toc-text">forec 和 fail</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地存根"><span class="post-toc-number">6.</span> <span class="post-toc-text">本地存根</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#负载均衡"><span class="post-toc-number">7.</span> <span class="post-toc-text">负载均衡</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#集群容错"><span class="post-toc-number">8.</span> <span class="post-toc-text">集群容错</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#线程模型"><span class="post-toc-number">9.</span> <span class="post-toc-text">线程模型</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#并发控制"><span class="post-toc-number">10.</span> <span class="post-toc-text">并发控制</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Provider异步执行和Conumer异步调用"><span class="post-toc-number">11.</span> <span class="post-toc-text">Provider异步执行和Conumer异步调用</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#配置加载流程"><span class="post-toc-number">12.</span> <span class="post-toc-text">配置加载流程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Filter扩展"><span class="post-toc-number">13.</span> <span class="post-toc-text">Filter扩展</span></a></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#启动时检查"><span class="post-toc-number">1.</span> <span class="post-toc-text">启动时检查</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#spring配置示例文件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">spring配置示例文件</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#dubbo-properties"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">dubbo.properties</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#多版本"><span class="post-toc-number">2.</span> <span class="post-toc-text">多版本</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#示例"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">示例</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#服务分组"><span class="post-toc-number">3.</span> <span class="post-toc-text">服务分组</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#dubbo提供分组聚合，"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">dubbo提供分组聚合，</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#参数验证"><span class="post-toc-number">4.</span> <span class="post-toc-text">参数验证</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地伪装"><span class="post-toc-number">5.</span> <span class="post-toc-text">本地伪装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#return"><span class="post-toc-number">5.1.</span> <span class="post-toc-text">return</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#throw"><span class="post-toc-number">5.2.</span> <span class="post-toc-text">throw</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#forec-和-fail"><span class="post-toc-number">5.3.</span> <span class="post-toc-text">forec 和 fail</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#本地存根"><span class="post-toc-number">6.</span> <span class="post-toc-text">本地存根</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#负载均衡"><span class="post-toc-number">7.</span> <span class="post-toc-text">负载均衡</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#集群容错"><span class="post-toc-number">8.</span> <span class="post-toc-text">集群容错</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#线程模型"><span class="post-toc-number">9.</span> <span class="post-toc-text">线程模型</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#并发控制"><span class="post-toc-number">10.</span> <span class="post-toc-text">并发控制</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Provider异步执行和Conumer异步调用"><span class="post-toc-number">11.</span> <span class="post-toc-text">Provider异步执行和Conumer异步调用</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#链接控制"><span class="post-toc-number">12.</span> <span class="post-toc-text">链接控制</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#日志适配"><span class="post-toc-number">13.</span> <span class="post-toc-text">日志适配</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#配置加载流程"><span class="post-toc-number">14.</span> <span class="post-toc-text">配置加载流程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#Filter扩展"><span class="post-toc-number">15.</span> <span class="post-toc-text">Filter扩展</span></a></li></ol>
         </nav>
     </aside>
 
@@ -264,12 +264,21 @@
 <li>cached 缓存线程池</li>
 </ul>
 <p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/user/demos/thread-model.html" target="_blank" rel="noopener">文档</a></p>
-<h4 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h4><p>限制服务方法，服务器并发执行的限制</p>
-<p>使用load balance 调用最小的服务提供者</p>
+<h4 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h4><p>限制服务方法，服务提供者并发执行的限制</p>
+<p>对方法单独设置现在</p>
+<p>对每个客户端进行并发控制</p>
+<p>使用load balance 调用最小活跃的服务提供者</p>
+<p>在服务卡顿是，并发量太大可以调整此参数</p>
 <p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/user/demos/concurrency-control.html" target="_blank" rel="noopener">文档</a></p>
 <h4 id="Provider异步执行和Conumer异步调用"><a href="#Provider异步执行和Conumer异步调用" class="headerlink" title="Provider异步执行和Conumer异步调用"></a>Provider异步执行和Conumer异步调用</h4><p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/user/demos/async-execute-on-provider.html" target="_blank" rel="noopener">执行</a>,<a href="http://dubbo.apache.org/zh-cn/docs/user/demos/async-call.html" target="_blank" rel="noopener">调用</a></p>
+<h4 id="链接控制"><a href="#链接控制" class="headerlink" title="链接控制"></a>链接控制</h4><p>设置服务提供者连接数</p>
+<p>限制客户端服务使用链接数</p>
+<p>如果是长链接，代表长链接的上线</p>
+<h4 id="日志适配"><a href="#日志适配" class="headerlink" title="日志适配"></a>日志适配</h4><p>支持 log4j,slf4j、jcl、jdk 这些日志框架的适配,亦可以使用SPI扩展</p>
 <h4 id="配置加载流程"><a href="#配置加载流程" class="headerlink" title="配置加载流程"></a>配置加载流程</h4><p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/user/configuration/config-center.html" target="_blank" rel="noopener">文档</a></p>
-<h4 id="Filter扩展"><a href="#Filter扩展" class="headerlink" title="Filter扩展"></a>Filter扩展</h4><p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/dev/impls/filter.html" target="_blank" rel="noopener">文档</a></p>
+<h4 id="Filter扩展"><a href="#Filter扩展" class="headerlink" title="Filter扩展"></a>Filter扩展</h4><p>服务提供方和服务消费方调用过程拦截，Dubbo 本身的大多功能均基于此扩展点实现，每次远 程方法执行，该拦截都会被执行，请注意对性能的影响。</p>
+<p>异步——》同步</p>
+<p>文档地址：<a href="http://dubbo.apache.org/zh-cn/docs/dev/impls/filter.html" target="_blank" rel="noopener">文档</a></p>
 
         </div>
 
@@ -351,7 +360,14 @@
     </div>
 
     
-<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/hexo/2020/06/09/docker-address-change/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">Docker 原地址变更</h4>
+      </a>
+    </div>
   
 
   
